@@ -1,14 +1,20 @@
-/* global moment, NProgress */
 hqDefine('cloudcare/js/utils', [
     'jquery',
+    'underscore',
+    'moment',
     'hqwebapp/js/initial_page_data',
     'integration/js/hmac_callout',
     "cloudcare/js/formplayer/constants",
+    'nprogress/nprogress',
+    'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min',  // for $.datetimepicker
 ], function (
     $,
+    _,
+    moment,
     initialPageData,
     HMACCallout,
-    constants
+    constants,
+    NProgress
 ) {
     if (!String.prototype.startsWith) {
         String.prototype.startsWith = function (searchString, position) {
