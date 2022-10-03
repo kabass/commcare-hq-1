@@ -1,14 +1,24 @@
-/* global DOMPurify, moment, NProgress */
 hqDefine('cloudcare/js/utils', [
     'jquery',
+    'underscore',
+    'moment',
+    'DOMPurify/dist/purify.min',
+    'markdown-it/dist/markdown-it',
     'hqwebapp/js/initial_page_data',
     'integration/js/hmac_callout',
     "cloudcare/js/formplayer/constants",
+    'nprogress/nprogress',
+    'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min',  // for $.datetimepicker
 ], function (
     $,
+    _,
+    moment,
+    DOMPurify,
+    markdowner,
     initialPageData,
     HMACCallout,
-    constants
+    constants,
+    NProgress
 ) {
     if (!String.prototype.startsWith) {
         String.prototype.startsWith = function (searchString, position) {
@@ -233,8 +243,7 @@ hqDefine('cloudcare/js/utils', [
     };
 
     function renderMarkdown(text) {
-        const md = window.markdownit({ breaks: true });
-        return md.render(DOMPurify.sanitize(text || "").replaceAll("&#10;", "\n"));
+        return markdowner({ breaks: true }).render(DOMPurify.sanitize(text || "").replaceAll("&#10;", "\n"));
     };
 
     function chainedRenderer(matcher, transform, target) {
