@@ -1,16 +1,28 @@
-/*globals DOMPurify, Marionette */
-
-hqDefine("cloudcare/js/formplayer/menus/views", function () {
-    const kissmetrics = hqImport("analytix/js/kissmetrix"),
-        constants = hqImport("cloudcare/js/formplayer/constants"),
-        FormplayerFrontend = hqImport("cloudcare/js/formplayer/app"),
-        initialPageData = hqImport("hqwebapp/js/initial_page_data"),
-        toggles = hqImport("hqwebapp/js/toggles"),
-        formplayerUtils = hqImport("cloudcare/js/formplayer/utils/utils"),
-        cloudcareUtils = hqImport("cloudcare/js/utils");
-
-
-
+hqDefine("cloudcare/js/formplayer/menus/views", [
+    'jquery',
+    'underscore',
+    'backbone.marionette',
+    'DOMPurify/dist/purify.min',
+    'hqwebapp/js/initial_page_data',
+    'hqwebapp/js/toggles',
+    'analytix/js/kissmetrix',
+    'cloudcare/js/formplayer/constants',
+    'cloudcare/js/formplayer/app',
+    'cloudcare/js/formplayer/utils/utils',
+    'cloudcare/js/utils',
+], function (
+    $,
+    _,
+    Marionette,
+    DOMPurify,
+    initialPageData,
+    toggles,
+    kissmetrics,
+    constants,
+    FormplayerFrontend,
+    formplayerUtils,
+    cloudcareUtils
+) {
     const MenuView = Marionette.View.extend({
         tagName: function () {
             if (this.model.collection.layoutStyle === 'grid') {
