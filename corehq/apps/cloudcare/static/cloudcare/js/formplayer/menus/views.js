@@ -1,12 +1,26 @@
-/*globals DOMPurify, Marionette */
-
-hqDefine("cloudcare/js/formplayer/menus/views", function () {
-    const kissmetrics = hqImport("analytix/js/kissmetrix"),
-        constants = hqImport("cloudcare/js/formplayer/constants"),
-        FormplayerFrontend = hqImport("cloudcare/js/formplayer/app"),
-        toggles = hqImport("hqwebapp/js/toggles"),
-        utils = hqImport("cloudcare/js/formplayer/utils/utils");
-
+hqDefine("cloudcare/js/formplayer/menus/views", [
+    'jquery',
+    'underscore',
+    'backbone.marionette',
+    'DOMPurify/dist/purify.min',
+    'markdown-it/dist/markdown-it',
+    'hqwebapp/js/toggles',
+    'analytix/js/kissmetrix',
+    'cloudcare/js/formplayer/constants',
+    'cloudcare/js/formplayer/app',
+    'cloudcare/js/formplayer/utils/utils',
+], function (
+    $,
+    _,
+    Marionette,
+    DOMPurify,
+    markdowner,
+    toggles,
+    kissmetrics,
+    constants,
+    FormplayerFrontend,
+    utils
+) {
     const MenuView = Marionette.View.extend({
         tagName: function () {
             if (this.model.collection.layoutStyle === 'grid') {
@@ -268,14 +282,13 @@ hqDefine("cloudcare/js/formplayer/menus/views", function () {
         },
 
         templateContext: function () {
-            const appId = utils.currentUrlToObject().appId,
-                md = window.markdownit();
+            const appId = utils.currentUrlToObject().appId;
             return {
                 data: this.options.model.get('data'),
                 styles: this.options.styles,
                 isMultiSelect: this.options.isMultiSelect,
                 renderMarkdown: function (datum) {
-                    return md.render(DOMPurify.sanitize(datum || ""));
+                    return markdowner().render(DOMPurify.sanitize(datum || ""));
                 },
                 resolveUri: function (uri) {
                     return FormplayerFrontend.getChannel().request('resourceMap', uri, appId);
