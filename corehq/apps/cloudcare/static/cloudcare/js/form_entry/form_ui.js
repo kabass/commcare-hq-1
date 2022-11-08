@@ -13,7 +13,7 @@ hqDefine("cloudcare/js/form_entry/form_ui", [
     ko,
     _,
     DOMPurify,
-    md,
+    markdowner,
     constants,
     entries,
     utils
@@ -21,11 +21,11 @@ hqDefine("cloudcare/js/form_entry/form_ui", [
     var groupNum = 0;
 
     // Overriden by downstream contexts, check before changing
-    window.mdAnchorRender = md.renderer.rules.link_open || function (tokens, idx, options, env, self) {
+    window.mdAnchorRender = markdowner().renderer.rules.link_open || function (tokens, idx, options, env, self) {
         return self.renderToken(tokens, idx, options);
     };
 
-    md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+    markdowner().renderer.rules.link_open = function (tokens, idx, options, env, self) {
         // If you are sure other plugins can't add `target` - drop check below
         var aIndex = tokens[idx].attrIndex('target');
 
@@ -39,7 +39,7 @@ hqDefine("cloudcare/js/form_entry/form_ui", [
         return window.mdAnchorRender(tokens, idx, options, env, self);
     };
 
-    md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
+    markdowner().renderer.rules.heading_open = function (tokens, idx, options, env, self) {
         var aIndex = tokens[idx].attrIndex('tabindex');
 
         if (aIndex < 0) {
@@ -53,7 +53,7 @@ hqDefine("cloudcare/js/form_entry/form_ui", [
         ko.bindingHandlers.renderMarkdown = {
             update: function (element, valueAccessor) {
                 var value = ko.unwrap(valueAccessor());
-                value = md.render(value || '');
+                value = markdowner().render(value || '');
                 $(element).html(value);
             },
         };
@@ -198,7 +198,7 @@ hqDefine("cloudcare/js/form_entry/form_ui", [
             },
             caption_markdown: {
                 update: function (options) {
-                    return options.data ? md.render(options.data) : null;
+                    return options.data ? markdowner().render(options.data) : null;
                 },
             },
             children: {
@@ -705,12 +705,12 @@ hqDefine("cloudcare/js/form_entry/form_ui", [
             },
             caption_markdown: {
                 update: function (options) {
-                    return options.data ? md.render(options.data) : null;
+                    return options.data ? markdowner().render(options.data) : null;
                 },
             },
             help: {
                 update: function (options) {
-                    return options.data ? md.render(DOMPurify.sanitize(options.data)) : null;
+                    return options.data ? markdowner().render(DOMPurify.sanitize(options.data)) : null;
                 },
             },
         };
