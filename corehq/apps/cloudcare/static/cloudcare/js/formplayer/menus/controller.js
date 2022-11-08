@@ -21,7 +21,7 @@ hqDefine("cloudcare/js/formplayer/menus/controller", [
     formplayerUtils,
     menusUtils,
     views,
-    md
+    markdowner
 ) {
     var selectMenu = function (options) {
 
@@ -224,7 +224,7 @@ hqDefine("cloudcare/js/formplayer/menus/controller", [
             obj.style = styles[i];
             obj.id = i;
             if (obj.style.displayFormat === 'Markdown') {
-                obj.html = DOMPurify.sanitize(md.render(details[i]));
+                obj.html = DOMPurify.sanitize(markdowner().render(details[i]));
             }
             detailModel.push(obj);
         }
