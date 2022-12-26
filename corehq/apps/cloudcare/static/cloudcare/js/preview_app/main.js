@@ -5,6 +5,7 @@ hqDefine("cloudcare/js/preview_app/main", [
     'cloudcare/js/sentry",
     'cloudcare/js/preview_app/preview_app',
     'cloudcare/js/utils',
+    'cloudcare/js/preview_app/dragscroll',  // for .dragscroll elements
 ], function (
     $,
     _,
