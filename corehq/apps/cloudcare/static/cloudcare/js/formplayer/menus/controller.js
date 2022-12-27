@@ -6,6 +6,7 @@ hqDefine("cloudcare/js/formplayer/menus/controller", [
     'hqwebapp/js/toggles',
     'cloudcare/js/formplayer/constants',
     'cloudcare/js/formplayer/app',
+    'cloudcare/js/formplayer/users/models',
     'cloudcare/js/formplayer/utils/utils',
     'cloudcare/js/formplayer/menus/utils',
     'cloudcare/js/formplayer/menus/views',
@@ -19,6 +20,7 @@ hqDefine("cloudcare/js/formplayer/menus/controller", [
     toggles,
     constants,
     FormplayerFrontend,
+    UsersModels,
     formplayerUtils,
     menusUtils,
     views,
@@ -26,7 +28,7 @@ hqDefine("cloudcare/js/formplayer/menus/controller", [
 ) {
     var selectMenu = function (options) {
 
-        options.preview = FormplayerFrontend.currentUser.displayOptions.singleAppMode;
+        options.preview = UsersModels.getCurrentUser().displayOptions.singleAppMode;
 
         var fetchingNextMenu = FormplayerFrontend.getChannel().request("app:select:menus", options);
 
@@ -119,7 +121,7 @@ hqDefine("cloudcare/js/formplayer/menus/controller", [
 
     var showMenu = function (menuResponse) {
         var menuListView = menusUtils.getMenuView(menuResponse);
-        var appPreview = FormplayerFrontend.currentUser.displayOptions.singleAppMode;
+        var appPreview = UsersModels.getCurrentUser().displayOptions.singleAppMode;
         var changeFormLanguage = toggles.toggleEnabled('CHANGE_FORM_LANGUAGE');
         var enablePrintOption = !menuResponse.queryKey;
 

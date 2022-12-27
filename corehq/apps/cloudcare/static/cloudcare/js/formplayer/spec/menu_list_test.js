@@ -2,7 +2,8 @@
 /* eslint-env mocha */
 describe('Render a case list', function () {
     let MenuListFixture = hqImport("cloudcare/js/formplayer/spec/fixtures/menu_list"),
-        Utils = hqImport("cloudcare/js/formplayer/utils/utils");
+        Utils = hqImport("cloudcare/js/formplayer/utils/utils"),
+        UsersModels = hqImport("cloudcare/js/formplayer/users/models");
 
     before(function () {
         hqImport("hqwebapp/js/initial_page_data").register(
@@ -89,7 +90,7 @@ describe('Render a case list', function () {
             server.onCreate = function (xhr) {
                 requests.push(xhr);
             };
-            user = FormplayerFrontend.getChannel().request('currentUser');
+            user = UsersModels.getCurrentUser();
             user.domain = 'test-domain';
             user.username = 'test-username';
             user.formplayer_url = 'url';
