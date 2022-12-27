@@ -4,19 +4,20 @@ hqDefine("cloudcare/js/formplayer/apps/controller", [
     'cloudcare/js/formplayer/constants',
     'cloudcare/js/formplayer/app',
     'cloudcare/js/formplayer/layout/views/settings',
+    'cloudcare/js/formplayer/apps/api',
     'cloudcare/js/formplayer/apps/views',
-    'cloudcare/js/formplayer/apps/api'  // appselect:apps
 ], function (
     $,
     Backbone,
     constants,
     FormplayerFrontend,
     settingsViews,
+    AppsAPI,
     views
 ) {
     return {
         listApps: function () {
-            $.when(FormplayerFrontend.getChannel().request("appselect:apps")).done(function (apps) {
+            $.when(AppsAPI.getAppEntities()).done(function (apps) {
                 var appGridView = views.GridView({
                     collection: apps,
                 });
@@ -29,7 +30,7 @@ hqDefine("cloudcare/js/formplayer/apps/controller", [
          * Renders a SingleAppView.
          */
         singleApp: function (appId) {
-            $.when(FormplayerFrontend.getChannel().request("appselect:apps")).done(function () {
+            $.when(AppsAPI.getAppEntities()).done(function () {
                 var singleAppView = views.SingleAppView({
                     appId: appId,
                 });
@@ -37,7 +38,7 @@ hqDefine("cloudcare/js/formplayer/apps/controller", [
             });
         },
         landingPageApp: function (appId) {
-            $.when(FormplayerFrontend.getChannel().request("appselect:apps")).done(function () {
+            $.when(AppsAPI.getAppEntities()).done(function () {
                 var landingPageAppView = views.LandingPageAppView({
                     appId: appId,
                 });
