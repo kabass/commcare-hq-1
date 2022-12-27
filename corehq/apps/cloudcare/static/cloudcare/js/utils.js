@@ -4,6 +4,7 @@ hqDefine('cloudcare/js/utils', [
     'hqwebapp/js/initial_page_data',
     'integration/js/hmac_callout',
     "cloudcare/js/formplayer/constants",
+    "cloudcare/js/formplayer/users/models",
     'nprogress/nprogress',
     'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min',  // for $.datetimepicker
 ], function (
@@ -12,6 +13,7 @@ hqDefine('cloudcare/js/utils', [
     initialPageData,
     HMACCallout,
     constants,
+    UsersModels,
     NProgress
 ) {
     if (!String.prototype.startsWith) {
@@ -181,33 +183,31 @@ hqDefine('cloudcare/js/utils', [
     };
 
     var reportFormplayerErrorToHQ = function (data) {
-        hqRequire(["cloudcare/js/formplayer/app"], function (FormplayerFrontend) {
-            try {
-                var cloudcareEnv = FormplayerFrontend.getChannel().request('currentUser').environment;
-                if (!data.cloudcareEnv) {
-                    data.cloudcareEnv = cloudcareEnv || 'unknown';
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: initialPageData.reverse('report_formplayer_error'),
-                    data: JSON.stringify(data),
-                    contentType: "application/json",
-                    dataType: "json",
-                    success: function () {
-                        window.console.info('Successfully reported error: ' + JSON.stringify(data));
-                    },
-                    error: function () {
-                        window.console.error('Failed to report error: ' + JSON.stringify(data));
-                    },
-                });
-            } catch (e) {
-                window.console.error(
-                    "reportFormplayerErrorToHQ failed hard and there is nowhere " +
-                    "else to report this error: " + JSON.stringify(data),
-                    e
-                );
+        try {
+            var cloudcareEnv = UsersModels.getCurrentUser().environment;
+            if (!data.cloudcareEnv) {
+                data.cloudcareEnv = cloudcareEnv || 'unknown';
             }
-        });
+            $.ajax({
+                type: 'POST',
+                url: initialPageData.reverse('report_formplayer_error'),
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                dataType: "json",
+                success: function () {
+                    window.console.info('Successfully reported error: ' + JSON.stringify(data));
+                },
+                error: function () {
+                    window.console.error('Failed to report error: ' + JSON.stringify(data));
+                },
+            });
+        } catch (e) {
+            window.console.error(
+                "reportFormplayerErrorToHQ failed hard and there is nowhere " +
+                "else to report this error: " + JSON.stringify(data),
+                e
+            );
+        }
     };
 
     function chainedRenderer(matcher, transform, target) {

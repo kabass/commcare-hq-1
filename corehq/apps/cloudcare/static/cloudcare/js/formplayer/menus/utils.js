@@ -6,6 +6,7 @@ hqDefine("cloudcare/js/formplayer/menus/utils", [
     'cloudcare/js/formplayer/app',
     'cloudcare/js/formplayer/layout/views/progress_bar',
     'cloudcare/js/formplayer/menus/views/query',
+    'cloudcare/js/formplayer/users/models',
     'cloudcare/js/formplayer/utils/utils',
     'cloudcare/js/formplayer/menus/views',
 ], function (
@@ -16,6 +17,7 @@ hqDefine("cloudcare/js/formplayer/menus/utils", [
     FormplayerFrontend,
     ProgressBar,
     QueryView,
+    UsersModels,
     utils,
     views
 ) {
@@ -147,7 +149,7 @@ hqDefine("cloudcare/js/formplayer/menus/utils", [
         } else if (menuResponse.type === "query") {
             if (toggles.toggleEnabled('APP_ANALYTICS')) {
                 var props = {
-                    domain: FormplayerFrontend.getChannel().request('currentUser').domain,
+                    domain: UsersModels.getCurrentUser().domain,
                 };
                 if (menuResponse.breadcrumbs && menuResponse.breadcrumbs.length) {
                     props.name = menuResponse.breadcrumbs[menuResponse.breadcrumbs.length - 1];
@@ -164,7 +166,7 @@ hqDefine("cloudcare/js/formplayer/menus/utils", [
                     event = "Searched Case List";
                 }
                 var eventData = {
-                    domain: FormplayerFrontend.getChannel().request("currentUser").domain,
+                    domain: UsersModels.getCurrentUser().domain,
                     name: menuResponse.title,
                 };
                 var fields = _.pick(utils.getCurrentQueryInputs(), function (v) { return !!v; });

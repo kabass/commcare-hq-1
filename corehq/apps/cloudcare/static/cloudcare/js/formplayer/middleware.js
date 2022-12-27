@@ -2,10 +2,12 @@ hqDefine("cloudcare/js/formplayer/middleware", [
     'jquery',
     'underscore',
     'cloudcare/js/formplayer/app',
+    'cloudcare/js/formplayer/users/models',
 ], function (
     $,
     _,
-    FormplayerFrontend
+    FormplayerFrontend,
+    UsersModels
 ) {
     var logRouteMiddleware = function (name) {
         window.console.log('User navigated to ' + name);
@@ -25,7 +27,7 @@ hqDefine("cloudcare/js/formplayer/middleware", [
     };
     var setScrollableMaxHeight = function () {
         var maxHeight,
-            user = FormplayerFrontend.getChannel().request('currentUser'),
+            user = UsersModels.getCurrentUser(),
             restoreAsBannerHeight = 0;
 
         if (user.restoreAs) {

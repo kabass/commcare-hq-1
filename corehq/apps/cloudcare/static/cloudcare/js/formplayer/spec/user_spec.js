@@ -17,13 +17,13 @@ describe('User', function () {
 
     describe('CurrentUser Model', function () {
         it('should get the display name of a mobile worker', function () {
-            let model = hqImport("cloudcare/js/formplayer/users/models").CurrentUser();
+            let model = hqImport("cloudcare/js/formplayer/users/models").getCurrentUser();
             model.username = 'worker@domain.commcarehq.org';
             assert.equal(model.getDisplayUsername(), 'worker');
         });
 
         it('should get the display name of a web user', function () {
-            let model = hqImport("cloudcare/js/formplayer/users/models").CurrentUser();
+            let model = hqImport("cloudcare/js/formplayer/users/models").getCurrentUser();
             model.username = 'web@gmail.com';
             assert.equal(model.getDisplayUsername(), 'web@gmail.com');
         });
