@@ -8,6 +8,7 @@ hqDefine("cloudcare/js/formplayer/menus/views", [
     'analytix/js/kissmetrix',
     'cloudcare/js/formplayer/constants',
     'cloudcare/js/formplayer/app',
+    'cloudcare/js/formplayer/users/models',
     'cloudcare/js/formplayer/utils/utils',
 ], function (
     $,
@@ -19,6 +20,7 @@ hqDefine("cloudcare/js/formplayer/menus/views", [
     kissmetrics,
     constants,
     FormplayerFrontend,
+    UsersModels,
     utils
 ) {
     const MenuView = Marionette.View.extend({
@@ -126,7 +128,7 @@ hqDefine("cloudcare/js/formplayer/menus/views", [
         templateContext: function () {
             return {
                 title: this.options.title,
-                environment: FormplayerFrontend.getChannel().request('currentUser').environment,
+                environment: UsersModels.getCurrentUser().environment,
             };
         },
         childViewOptions: function (model) {
