@@ -1,9 +1,13 @@
-hqDefine("cloudcare/js/form_entry/spec/utils_spec", function () {
+hqDefine("cloudcare/js/form_entry/spec/utils_spec", [
+    "cloudcare/js/form_entry/spec/fixtures",
+    "cloudcare/js/form_entry/form_ui",
+    "cloudcare/js/form_entry/utils",
+], function (
+    fixtures,
+    formUI,
+    utils,
+) {
     describe('Formplayer utils', function () {
-        var fixtures = hqImport("cloudcare/js/form_entry/spec/fixtures"),
-            formUI = hqImport("cloudcare/js/form_entry/form_ui"),
-            utils = hqImport("cloudcare/js/form_entry/utils");
-
         it('Should determine if two answers are equal', function () {
             var answersEqual = utils.answersEqual,
                 result;
