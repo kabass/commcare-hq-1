@@ -11,8 +11,31 @@ hqDefine("cloudcare/js/formplayer/main", [
     FormplayerFrontEnd,
     utils
 ) {
+    let initSentry = function () {
+        let initialPageData = hqImport("hqwebapp/js/initial_page_data").get;
+        const dsn = initialPageData('sentry_dsn');
+        if (dsn) {
+            Sentry.init({
+                dsn: dsn,
+                environment: initialPageData('sentry_environment'),
+                release: initialPageData('sentry_release'),
+                initialScope: {
+                    tags: { "domain": initialPageData('domain') },
+                    user: { "username": initialPageData('username') },
+                },
+                integrations: [
+                    new Sentry.Integrations.Breadcrumbs({
+                        dom: false,
+                    }),
+                ],
+            });
+        }
+    };
+
     $(function () {
+        initSentry();
         window.MAPBOX_ACCESS_TOKEN = initialPageData.get('mapbox_access_token'); // maps api is loaded on-demand
+
         var options = {
             apps: initialPageData.get('apps'),
             language: initialPageData.get('language'),

@@ -182,12 +182,32 @@ hqDefine('cloudcare/js/utils', [
         NProgress.done();
     };
 
+    function getSentryMessage(data) {
+        // replace IDs with a placeholder
+        let message = data.message;
+        if (message) {
+            message = message.replace("/[a-f0-9-]{7,}/gi", "[...]");
+        } else {
+            message = "Unknown Error";
+        }
+        return "[WebApps] " + message;
+    }
+
     var reportFormplayerErrorToHQ = function (data) {
         try {
             var cloudcareEnv = UsersModels.getCurrentUser().environment;
             if (!data.cloudcareEnv) {
                 data.cloudcareEnv = cloudcareEnv || 'unknown';
             }
+
+            const sentryData = _.omit(data, "type", "htmlMessage");
+            Sentry.captureMessage(getSentryMessage(data), {
+                tags: {
+                    errorType: data.type,
+                },
+                extra: sentryData,
+            });
+
             $.ajax({
                 type: 'POST',
                 url: initialPageData.reverse('report_formplayer_error'),
