@@ -1,10 +1,12 @@
 hqDefine("cloudcare/js/formplayer/users/utils", [
     'jquery',
+    'hqwebapp/js/lib/sentry.min',
     'hqwebapp/js/initial_page_data',
     'cloudcare/js/formplayer/app',
     'cloudcare/js/formplayer/users/models',
 ], function (
     $,
+    Sentry,
     initialPageData,
     FormplayerFrontend,
     UsersModels

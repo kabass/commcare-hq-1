@@ -6,11 +6,13 @@
 hqDefine("cloudcare/js/formplayer/menus/collections", [
     'underscore',
     'backbone',
+    'hqwebapp/js/lib/sentry.min',
     'cloudcare/js/formplayer/app',
     'cloudcare/js/formplayer/utils/utils',
 ], function (
     _,
     Backbone,
+    Sentry,
     FormplayerFrontend,
     Utils
 ) {

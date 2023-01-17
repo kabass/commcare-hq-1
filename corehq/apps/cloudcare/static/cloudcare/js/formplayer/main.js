@@ -1,27 +1,28 @@
 hqDefine("cloudcare/js/formplayer/main", [
     'jquery',
     'hqwebapp/js/initial_page_data',
+    'hqwebapp/js/lib/sentry.min',
     'hqwebapp/js/toggles',
     'cloudcare/js/formplayer/app',
     'cloudcare/js/utils'
 ], function (
     $,
     initialPageData,
+    Sentry,
     toggles,
     FormplayerFrontEnd,
     utils
 ) {
     let initSentry = function () {
-        let initialPageData = hqImport("hqwebapp/js/initial_page_data").get;
-        const dsn = initialPageData('sentry_dsn');
+        const dsn = initialPageData.get('sentry_dsn');
         if (dsn) {
             Sentry.init({
                 dsn: dsn,
-                environment: initialPageData('sentry_environment'),
-                release: initialPageData('sentry_release'),
+                environment: initialPageData.get('sentry_environment'),
+                release: initialPageData.get('sentry_release'),
                 initialScope: {
-                    tags: { "domain": initialPageData('domain') },
-                    user: { "username": initialPageData('username') },
+                    tags: { "domain": initialPageData.get('domain') },
+                    user: { "username": initialPageData.get('username') },
                 },
                 integrations: [
                     new Sentry.Integrations.Breadcrumbs({

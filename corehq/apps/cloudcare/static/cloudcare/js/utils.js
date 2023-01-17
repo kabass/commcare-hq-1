@@ -1,6 +1,7 @@
 hqDefine('cloudcare/js/utils', [
     'jquery',
     'underscore',
+    'hqwebapp/js/lib/sentry.min',
     'hqwebapp/js/initial_page_data',
     'integration/js/hmac_callout',
     "cloudcare/js/formplayer/constants",
@@ -10,6 +11,7 @@ hqDefine('cloudcare/js/utils', [
 ], function (
     $,
     _,
+    Sentry,
     initialPageData,
     HMACCallout,
     constants,
