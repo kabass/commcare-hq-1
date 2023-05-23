@@ -2,7 +2,7 @@ hqDefine("cloudcare/js/preview_app/main", [
     'jquery',
     'underscore',
     'hqwebapp/js/initial_page_data',
-    'cloudcare/js/sentry",
+    'es6!cloudcare/js/sentry",
     'cloudcare/js/preview_app/preview_app',
     'cloudcare/js/utils',
     'cloudcare/js/preview_app/dragscroll',  // for .dragscroll elements

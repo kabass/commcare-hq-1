@@ -51,6 +51,10 @@ function hqDefine(path, dependencies, moduleAccessor) {
 
     (function (factory) {
         if (typeof define === 'function' && define.amd && window.USE_REQUIREJS) {
+            // Strip plugin prefix, which should not be neccessary
+            path = path.replace("es6!", "");
+            dependencies = dependencies.map((d) => d.replace("es6!", ""));
+
             // HQ's requirejs build process (build_requirejs.py) replaces hqDefine calls with
             // define calls, so it's important that this do nothing but pass through to require
             define(path, dependencies, factory);

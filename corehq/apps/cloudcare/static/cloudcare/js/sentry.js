@@ -1,7 +1,7 @@
-hqDefine('cloudcare/js/sentry', [
+hqDefine('es6!cloudcare/js/sentry', [
     'hqwebapp/js/initial_page_data',
-    'sentry/js/sentry.browser.7.28.0.min',
-    'sentry/js/sentry.captureconsole.7.28.0.min',   // needed for Sentry.Integrations.CaptureConsole
+    'es6!sentry/js/sentry.browser.7.28.0.min',
+    'es6!sentry/js/sentry.captureconsole.7.28.0.min',   // needed for Sentry.Integrations.CaptureConsole
 ], function (
     initialPageData,
     Sentry
@@ -37,6 +37,7 @@ hqDefine('cloudcare/js/sentry', [
     };
 
     return {
-        initSentry: initSentry
+        initSentry: initSentry,
+        Sentry: Sentry,
     };
 });

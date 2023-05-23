@@ -2,7 +2,7 @@ hqDefine("cloudcare/js/formplayer/main", [
     'jquery',
     'hqwebapp/js/initial_page_data',
     'cloudcare/js/formplayer/app',
-    'cloudcare/js/sentry',
+    'es6!cloudcare/js/sentry',
     'cloudcare/js/utils'
 ], function (
     $,

@@ -4,7 +4,7 @@
 hqDefine("cloudcare/js/formplayer/menus/api", [
     'jquery',
     'underscore',
-    'sentry/js/sentry.browser.7.28.0.min',
+    'es6!cloudcare/js/sentry',
     'cloudcare/js/formplayer/menus/collections',
     'cloudcare/js/formplayer/constants',
     'cloudcare/js/form_entry/errors',
@@ -172,7 +172,7 @@ hqDefine("cloudcare/js/formplayer/menus/api", [
                     Object.freeze(options);
                 }
                 const sentryData = _.pick(data, ["selections", "query_data", "app_id"]);
-                Sentry.addBreadcrumb({
+                Sentry.Sentry.addBreadcrumb({
                     category: "formplayer",
                     message: "[request] " + route,
                     data: _.pick(sentryData, _.identity),

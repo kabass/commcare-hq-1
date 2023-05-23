@@ -6,7 +6,7 @@
 hqDefine("cloudcare/js/formplayer/menus/collections", [
     'underscore',
     'backbone',
-    'sentry/js/sentry.browser.7.28.0.min',
+    'es6!cloudcare/js/sentry',
     'cloudcare/js/formplayer/app',
     'cloudcare/js/formplayer/utils/utils',
 ], function (
@@ -17,7 +17,7 @@ hqDefine("cloudcare/js/formplayer/menus/collections", [
     Utils
 ) {
     function addBreadcrumb(collection, type, data) {
-        Sentry.addBreadcrumb({
+        Sentry.Sentry.addBreadcrumb({
             category: "formplayer",
             message: "[response] " + type + ": " + collection.title + " (" + collection.queryKey + ")",
             data: data,
