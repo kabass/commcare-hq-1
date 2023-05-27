@@ -41,7 +41,7 @@ def ancestor_comparison_query(context, node):
         value = binary_node.right
         ancestor_path = serialize(binary_node.left.left)
         op = binary_node.op
-        ancestor_case_filter = f'{case_property}{node.op}"{value}")'
+        ancestor_case_filter = f'{case_property}{node.op}"{value}"'
 
     # extract ancestor path:
     # `parent/grandparent/property = 'value'` --> `parent/grandparent`
