@@ -28,7 +28,6 @@ def ancestor_comparison_query(context, node):
 
     :param node: a node returned from eulxml.xpath.parse of the form `parent/grandparent/property = 'value'`
     """
-    print("in ancestor_comparison_query")
     binary_node = node
     if isinstance(node, FunctionCall) and node.name == "unwrap-list":
         binary_node = node.args[0]
@@ -46,8 +45,6 @@ def ancestor_comparison_query(context, node):
     # extract ancestor path:
     # `parent/grandparent/property = 'value'` --> `parent/grandparent`
     ancestor_path = serialize(binary_node.left.left)
-    print("ancestor_path", ancestor_path)
-    print("ancestor_case_filter", ancestor_case_filter)
     return process_ancestor_exists(parse_xpath(ancestor_path),parse_xpath(ancestor_case_filter), context)
 
 
@@ -129,7 +126,6 @@ def process_ancestor_exists(ancestor_path_node, ancestor_case_filter_node, conte
     _validate_ancestor_exists_filter(ancestor_case_filter_node)
     base_case_ids = _get_case_ids_from_ast_filter(context, ancestor_case_filter_node)
     ids = list(base_case_ids)
-    print("base_Case_ids are", list(ids))
     return walk_ancestor_hierarchy(context, ancestor_path_node, ids)
 
 

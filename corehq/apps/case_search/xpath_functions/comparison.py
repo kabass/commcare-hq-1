@@ -19,11 +19,8 @@ def property_comparison_query(context, case_property_name_raw, op, value_raw, no
 
     case_property_name = serialize(case_property_name_raw)
     value = unwrap_value(value_raw, context)
-    print("value is", value, type(value))
-    print('case_property_name', case_property_name)
 
     if op in [EQ, NEQ]:
-        print("about to query")
         query = case_property_query(case_property_name, value, fuzzy=context.fuzzy)
         if op == NEQ:
             query = filters.NOT(query)
