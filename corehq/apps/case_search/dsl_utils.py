@@ -20,7 +20,7 @@ def unwrap_value(value, context):
             ""
         )
 
-    acceptable_types = (int, str, float, bool, FunctionCall, UnaryExpression)
+    acceptable_types = (int, str, list, float, bool, FunctionCall, UnaryExpression)
     if not isinstance(value, acceptable_types):
         raise CaseFilterError(_("Unexpected type for value expression"), serialize(value))
 

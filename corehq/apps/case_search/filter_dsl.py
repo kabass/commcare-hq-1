@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+import json
 
 from django.utils.translation import gettext as _
 from eulxml.xpath import parse as parse_xpath
@@ -18,7 +19,7 @@ from corehq.apps.case_search.xpath_functions import (
     XPATH_QUERY_FUNCTIONS,
 )
 from corehq.apps.case_search.xpath_functions.ancestor_functions import is_ancestor_comparison, \
-    ancestor_comparison_query
+    ancestor_comparison_query, _is_ancestor_path_expression
 from corehq.apps.case_search.xpath_functions.comparison import property_comparison_query
 
 
@@ -72,12 +73,28 @@ def build_filter_from_ast(node, context):
 
         """
         return property_comparison_query(context, node.left, node.op, node.right, node)
+    
+    def unwrap_list(node, context):
+        print("node is", node)
+        binary_node = node.args[0]
+        print("binart_node is", binary_node)
+        values = json.loads(binary_node.right.replace("'", '"'))
+        if is_ancestor_comparison(binary_node):
+            print("IN IS ANCESTOR comparison")
+            return ancestor_comparison_query(context, node)
+        else:
+            print("Is NOT ANCESTOR comparison")
+            return property_comparison_query(context, binary_node.left, binary_node.op, values, binary_node)
+        #node.left acenstor path or regular path
+        # note.right list of values
 
     def visit(node):
 
         if isinstance(node, FunctionCall):
             if node.name in XPATH_QUERY_FUNCTIONS:
                 return XPATH_QUERY_FUNCTIONS[node.name](node, context)
+            if node.name == 'unwrap-list':
+                return unwrap_list(node, context)
             else:
                 raise XPathFunctionException(
                     _("'{name}' is not a valid standalone function").format(name=node.name),
@@ -126,7 +143,10 @@ def build_filter_from_xpath(domain, xpath, fuzzy=False, multi_term=False):
 
     context = SearchFilterContext(domain, fuzzy, multi_term)
     try:
-        return build_filter_from_ast(parse_xpath(xpath), context)
+        print("xpath is", xpath)
+        xpath = parse_xpath(xpath)
+        print("successful xpath parsing")
+        return build_filter_from_ast(xpath, context)
     except TypeError as e:
         text_error = re.search(r"Unknown text '(.+)'", str(e))
         if text_error:

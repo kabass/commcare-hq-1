@@ -19,13 +19,11 @@ def property_comparison_query(context, case_property_name_raw, op, value_raw, no
 
     case_property_name = serialize(case_property_name_raw)
     value = unwrap_value(value_raw, context)
-
-    # In initial xpath parsing, multiple terms are converted to string
-    # i.e "['val1','val2']". This converts it back to a list for ES to filter by
-    if context.multi_term:
-        value = _parse_multiple_terms_list_str(value)
+    print("value is", value, type(value))
+    print('case_property_name', case_property_name)
 
     if op in [EQ, NEQ]:
+        print("about to query")
         query = case_property_query(case_property_name, value, fuzzy=context.fuzzy)
         if op == NEQ:
             query = filters.NOT(query)

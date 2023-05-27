@@ -1,3 +1,4 @@
+import json
 from django.utils.translation import gettext
 from eulxml.xpath import serialize
 from eulxml.xpath import parse as parse_xpath
@@ -27,15 +28,27 @@ def ancestor_comparison_query(context, node):
 
     :param node: a node returned from eulxml.xpath.parse of the form `parent/grandparent/property = 'value'`
     """
+    print("in ancestor_comparison_query")
+    binary_node = node
+    if isinstance(node, FunctionCall) and node.name == "unwrap-list":
+        binary_node = node.args[0]
+        case_property = serialize(binary_node.left.right)
+        value = json.loads(binary_node.right)
+        op = binary_node.op
+        ancestor_case_filter = f'unwrap-list({case_property}{op}"{value}")'
+    else:
+        case_property = serialize(binary_node.left.right)
+        value = binary_node.right
+        ancestor_path = serialize(binary_node.left.left)
+        op = binary_node.op
+        ancestor_case_filter = f'{case_property}{node.op}"{value}")'
 
-    case_property = serialize(node.left.right)
-    value = node.right
     # extract ancestor path:
     # `parent/grandparent/property = 'value'` --> `parent/grandparent`
-    ancestor_path = serialize(node.left.left)
-
-    xpath = f'ancestor-exists({ancestor_path},{case_property}{node.op}"{value}")'
-    return ancestor_exists(parse_xpath(xpath), context)
+    ancestor_path = serialize(binary_node.left.left)
+    print("ancestor_path", ancestor_path)
+    print("ancestor_case_filter", ancestor_case_filter)
+    return process_ancestor_exists(parse_xpath(ancestor_path),parse_xpath(ancestor_case_filter), context)
 
 
 def walk_ancestor_hierarchy(context, ancestor_path_node, case_ids):
@@ -109,10 +122,15 @@ def ancestor_exists(node, context):
     """
     confirm_args_count(node, 2)
     ancestor_path_node, ancestor_case_filter_node = node.args
+    return process_ancestor_exists(ancestor_path_node, ancestor_case_filter_node, context)
+
+def process_ancestor_exists(ancestor_path_node, ancestor_case_filter_node, context):
+    
     _validate_ancestor_exists_filter(ancestor_case_filter_node)
     base_case_ids = _get_case_ids_from_ast_filter(context, ancestor_case_filter_node)
-
-    return walk_ancestor_hierarchy(context, ancestor_path_node, base_case_ids)
+    ids = list(base_case_ids)
+    print("base_Case_ids are", list(ids))
+    return walk_ancestor_hierarchy(context, ancestor_path_node, ids)
 
 
 def _validate_ancestor_exists_filter(node):
@@ -133,11 +151,14 @@ def _validate_ancestor_exists_filter(node):
 
 
 def _get_case_ids_from_ast_filter(context, filter_node):
-    if (isinstance(filter_node, BinaryExpression)
-    and serialize(filter_node.left) == "@case_id" and filter_node.op in (EQ, NEQ)):
+    binary_node = filter_node
+    if isinstance(filter_node, FunctionCall) and filter_node.name == "unwrap-list":
+        binary_node = filter_node.args
+    if (isinstance(binary_node, BinaryExpression)
+    and serialize(binary_node.left) == "@case_id" and binary_node.op in (EQ, NEQ)):
         # case id is provided in query i.e @case_id="b9eaf791-e427-482d-add4-2a60acf0362e"
-        case_ids = filter_node.right
-        if isinstance(filter_node.right, str):
+        case_ids = binary_node.right
+        if isinstance(binary_node.right, str):
             return itertools([case_ids])
         else:
             return itertools(case_ids)
