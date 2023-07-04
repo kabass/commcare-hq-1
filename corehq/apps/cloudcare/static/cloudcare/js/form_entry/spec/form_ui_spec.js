@@ -1,10 +1,19 @@
 /* eslint-env mocha */
-hqDefine("cloudcare/js/form_entry/spec/form_ui_spec", function () {
+hqDefine("cloudcare/js/form_entry/spec/form_ui_spec", [
+    "underscore",
+    "sinon/pkg/sinon",
+    "cloudcare/js/form_entry/const",
+    "cloudcare/js/form_entry/form_ui",
+    "cloudcare/js/form_entry/spec/fixtures",
+], function (
+    _,
+    sinon,
+    constants,
+    formUI,
+    fixtures
+) {
     describe('Fullform formUI', function () {
-        var constants = hqImport("cloudcare/js/form_entry/const"),
-            formUI = hqImport("cloudcare/js/form_entry/form_ui"),
-            fixutres = hqImport("cloudcare/js/form_entry/spec/fixtures"),
-            questionJSON,
+        var questionJSON,
             formJSON,
             groupJSON,
             noQuestionGroupJSON,
@@ -14,15 +23,15 @@ hqDefine("cloudcare/js/form_entry/spec/form_ui_spec", function () {
             repeatNestJSON;
 
         beforeEach(function () {
-            questionJSON = fixutres.selectJSON();
+            questionJSON = fixtures.selectJSON();
 
-            repeatJSON = fixutres.repeatJSON();
+            repeatJSON = fixtures.repeatJSON();
 
-            repeatNestJSON = fixutres.repeatNestJSON();
+            repeatNestJSON = fixtures.repeatNestJSON();
 
-            groupJSON = fixutres.groupJSON();
+            groupJSON = fixtures.groupJSON();
 
-            noQuestionGroupJSON = fixutres.noQuestionGroupJSON();
+            noQuestionGroupJSON = fixtures.noQuestionGroupJSON();
 
             nestedGroupJSON = {
                 tree: [groupJSON, noQuestionGroupJSON],
