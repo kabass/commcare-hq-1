@@ -5,6 +5,7 @@ hqDefine("cloudcare/js/formplayer/sessions/views", [
     'moment',
     'cloudcare/js/formplayer/constants',
     'cloudcare/js/formplayer/app',
+    'cloudcare/js/formplayer/users/models',
     'cloudcare/js/formplayer/utils/utils',
     'cloudcare/js/formplayer/sessions/api',     // deleteSession
 ], function (
@@ -14,6 +15,7 @@ hqDefine("cloudcare/js/formplayer/sessions/views", [
     moment,
     constants,
     FormplayerFrontend,
+    UsersModels,
     utils
 ) {
     var SessionView = Marionette.View.extend({
@@ -132,7 +134,7 @@ hqDefine("cloudcare/js/formplayer/sessions/views", [
             }
         },
         templateContext: function () {
-            var user = FormplayerFrontend.getChannel().request('currentUser');
+            var user = UsersModels.getCurrentUser();
             var paginationConfig = utils.paginateOptions(this.options.pageNumber, this.options.totalPages);
             return {
                 total: this.collection.totalSessions,
