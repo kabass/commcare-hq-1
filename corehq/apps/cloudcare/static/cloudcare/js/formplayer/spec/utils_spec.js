@@ -1,12 +1,23 @@
 /* eslint-env mocha */
-/* global Backbone */
-hqDefine("cloudcare/js/formplayer/spec/utils_spec", function () {
+hqDefine("cloudcare/js/formplayer/spec/utils_spec", [
+    "underscore",
+    "backbone",
+    "sinon/pkg/sinon",
+    "cloudcare/js/formplayer/app",
+    "cloudcare/js/formplayer/menus/api",
+    "cloudcare/js/formplayer/spec/fake_formplayer",
+    "cloudcare/js/formplayer/utils/utils",
+    "cloudcare/js/formplayer/router",   // needed for navigation events, like menu:select
+], function (
+    _,
+    Backbone,
+    sinon,
+    FormplayerFrontend,
+    API,
+    FakeFormplayer,
+    Utils
+) {
     describe('Utils', function () {
-        let API = hqImport("cloudcare/js/formplayer/menus/api"),
-            FakeFormplayer = hqImport("cloudcare/js/formplayer/spec/fake_formplayer"),
-            FormplayerFrontend = hqImport("cloudcare/js/formplayer/app"),
-            Utils = hqImport("cloudcare/js/formplayer/utils/utils");
-
         describe('#displayOptions', function () {
             beforeEach(function () {
                 sinon.stub(Utils, 'getDisplayOptionsKey').callsFake(function () { return 'mykey'; });
