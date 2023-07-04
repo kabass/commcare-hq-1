@@ -1,12 +1,17 @@
 /* eslint-env mocha */
-/* global Backbone */
-hqDefine("cloudcare/js/formplayer/spec/query_spec", function () {
+hqDefine("cloudcare/js/formplayer/spec/query_spec", [
+    "backbone",
+    "sinon/pkg/sinon",
+    "cloudcare/js/formplayer/utils/utils",
+    "cloudcare/js/formplayer/menus/views/query",
+], function (
+    Backbone,
+    sinon,
+    Utils,
+    QueryListView
+) {
     describe('Query', function () {
-
         describe('itemset', function () {
-            let QueryListView = hqImport("cloudcare/js/formplayer/menus/views/query"),
-                Utils = hqImport("cloudcare/js/formplayer/utils/utils");
-
             let QueryViewModel = Backbone.Model.extend(),
                 QueryViewCollection = Backbone.Collection.extend(),
                 keyModel = new QueryViewModel({
@@ -37,7 +42,6 @@ hqDefine("cloudcare/js/formplayer/spec/query_spec", function () {
 
                 let expectedIndexItemsetChoicesDict = {"0": "California", "1": "Massachusetts", "2": "Florida"};
                 assert.deepEqual(expectedIndexItemsetChoicesDict, indexQueryView.model.get("itemsetChoicesDict"));
-
             });
         });
     });
