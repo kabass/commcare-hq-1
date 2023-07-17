@@ -882,7 +882,7 @@ class RepeaterIdProperty(StringProperty):
 
     def __set__(self, instance, value):
         super().__set__(instance, value)
-        type(instance).repeater.fget.reset_cache(instance)
+        instance.__dict__.pop("repeater", None)
 
 
 class RepeatRecord(SyncCouchToSQLMixin, Document):
@@ -946,8 +946,7 @@ class RepeatRecord(SyncCouchToSQLMixin, Document):
             )]
         return self
 
-    @property
-    @memoized
+    @cached_property
     def repeater(self):
         try:
             return Repeater.objects.get(repeater_id=self.repeater_id)
