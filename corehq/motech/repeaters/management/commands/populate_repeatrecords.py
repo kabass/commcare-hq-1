@@ -5,7 +5,7 @@ from dimagi.utils.parsing import json_format_datetime
 from corehq.apps.cleanup.management.commands.populate_sql_model_from_couch_model import PopulateSQLCommand
 from corehq.util.couch_helpers import paginate_view
 
-from ...models import Repeater
+from ...models import Repeater, RepeatRecordAttempt
 
 
 class Command(PopulateSQLCommand):
@@ -52,6 +52,20 @@ class Command(PopulateSQLCommand):
             couch["registered_on"],
             json_format_datetime(sql.registered_at),
         ))
+
+        # TODO avoid importing RepeatRecordAttempt in this file?
+        def transform_couch_attempts(items):
+            for attempt in items:
+                obj = RepeatRecordAttempt(attempt)
+                yield {f: getattr(obj, f) for f in attempt_fields}
+
+        attempt_fields = ["state", "message", "created_at"]
+        diffs.extend(x for x in cls.diff_lists(
+            "attempts",
+            list(transform_couch_attempts(couch["attempts"])),
+            sql.attempts,
+            attempt_fields,
+        ) if x)
         return diffs
 
     def get_ids_to_ignore(self, docs):

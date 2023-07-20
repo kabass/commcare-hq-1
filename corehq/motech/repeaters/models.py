@@ -95,7 +95,7 @@ from dimagi.ext.couchdbkit import (
     ListProperty,
     StringProperty,
 )
-from dimagi.utils.couch.migration import SyncCouchToSQLMixin, SyncSQLToCouchMixin
+from dimagi.utils.couch.migration import SubModelSpec, SyncCouchToSQLMixin, SyncSQLToCouchMixin
 from dimagi.utils.logging import notify_error, notify_exception
 from dimagi.utils.parsing import json_format_datetime
 
@@ -915,6 +915,17 @@ class RepeatRecord(SyncCouchToSQLMixin, Document):
     def _migration_sync_to_sql(self, sql_object, save=True):
         sql_object.repeater = self.repeater
         return super()._migration_sync_to_sql(sql_object, save=save)
+
+    @classmethod
+    def _migration_get_submodels(cls):
+        return [SubModelSpec(
+            "sqlrepeatrecordattempt_set",
+            SQLRepeatRecordAttempt,
+            ["state", "message", "created_at"],
+            "attempts",
+            RepeatRecordAttempt,
+            ["state", "message", "created_at"],
+        )]
 
     @classmethod
     def _migration_get_sql_model_class(cls):
