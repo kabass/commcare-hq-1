@@ -175,9 +175,15 @@ class TestRepeatRecordCouchToSQLMigration(BaseRepeatRecordCouchToSQLTest):
         self.assertEqual(obj.registered_at, hour_hence)
 
     def test_migration(self):
+        @property
+        def dont_lookup_repeater(self):
+            # fail if inefficient repeater lookup is attempted
+            raise Exception("this should not happen")
+
         doc, obj = self.create_repeat_record(unwrap_doc=False)
         doc.save(sync_to_sql=False)
-        call_command('populate_repeatrecords')
+        with patch.object(type(doc), "repeater", dont_lookup_repeater):
+            call_command('populate_repeatrecords')
         self.assertEqual(
             self.diff(doc.to_json(), SQLRepeatRecord.objects.get(couch_id=doc._id)),
             [],

@@ -74,21 +74,44 @@ class Command(PopulateSQLCommand):
         return {d["_id"] for d in docs if d["repeater_id"] not in existing_ids}
 
     @classmethod
-    def get_couch_repeater_id(cls, sql_repeater_id):
+    def get_couch_repeater_id(cls, sql_id):
         try:
-            return cls.repeater_id_map[sql_repeater_id]
+            return cls.repeater_id_map.get_couch_id(sql_id)
         except KeyError:
-            repeater_id = Repeater.objects.filter(id=sql_repeater_id).values_list("repeater_id", flat=True)[0]
-            cls.repeater_id_map[sql_repeater_id] = repeater_id
-            return repeater_id
+            couch_id = Repeater.objects.filter(id=sql_id).values_list("repeater_id", flat=True)[0]
+            cls.repeater_id_map.add_pair(sql_id, couch_id)
+            return couch_id
+
+    @classmethod
+    def get_sql_repeater_id(cls, couch_id):
+        try:
+            return cls.repeater_id_map.get_sql_id(couch_id)
+        except KeyError:
+            sql_id = Repeater.objects.filter(repeater_id=couch_id).values_list("id", flat=True)[0]
+            cls.repeater_id_map.add_pair(sql_id, couch_id)
+            return sql_id
 
     @classproperty
     def repeater_id_map(cls):
         try:
             data = cls._repeater_id_map
         except AttributeError:
-            data = cls._repeater_id_map = dict(Repeater.objects.values_list("id", "repeater_id"))
+            data = cls._repeater_id_map = TwoWayDict(Repeater.objects.values_list("id", "repeater_id"))
         return data
+
+    def handle(self, *args, **kw):
+        def _optimized_sync_to_sql(self_, sql_object, save=True):
+            # Avoid repeater lookup
+            sql_object.repeater_id = self.get_sql_repeater_id(self_.repeater_id)
+            return super(RepeatRecord, self_)._migration_sync_to_sql(sql_object, save=save)
+
+        from ...models import RepeatRecord
+        original_migration_sync_to_sql = RepeatRecord._migration_sync_to_sql
+        RepeatRecord._migration_sync_to_sql = _optimized_sync_to_sql
+        try:
+            return super().handle(*args, **kw)
+        finally:
+            RepeatRecord._migration_sync_to_sql = original_migration_sync_to_sql
 
     def _get_couch_doc_count_for_type(self):
         from ...models import RepeatRecord
@@ -130,3 +153,23 @@ def get_state(doc):
     elif doc['failure_reason']:
         state = models.RECORD_FAILURE_STATE
     return state
+
+
+class TwoWayDict:
+    def __init__(self, sql_and_couch_id_pairs):
+        self.couch_by_sql = dict(sql_and_couch_id_pairs)
+        self.sql_by_couch = {v: k for k, v in self.couch_by_sql.items()}
+        assert len(self.couch_by_sql) == len(self.sql_by_couch), \
+            f"{len(self.couch_by_sql)} != {len(self.sql_by_couch)}"
+
+    def get_couch_id(self, sql_id):
+        return self.couch_by_sql[sql_id]
+
+    def get_sql_id(self, couch_id):
+        return self.sql_by_couch[couch_id]
+
+    def add_pair(self, sql_id, couch_id):
+        self.couch_by_sql[sql_id] = couch_id
+        self.sql_by_couch[couch_id] = sql_id
+        assert len(self.couch_by_sql) == len(self.sql_by_couch), \
+            f"{len(self.couch_by_sql)} != {len(self.sql_by_couch)}"
