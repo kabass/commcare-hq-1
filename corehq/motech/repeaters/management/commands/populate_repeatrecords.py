@@ -140,6 +140,9 @@ class Command(PopulateSQLCommand):
         ):
             yield result['doc']
 
+    #def _get_couch_doc_count_for_domains(self, domains):
+    #def _iter_couch_docs_for_domains(self, domains, chunk_size):
+
 
 def get_state(doc):
     from ... import models
