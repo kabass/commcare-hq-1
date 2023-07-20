@@ -95,6 +95,7 @@ from dimagi.ext.couchdbkit import (
     ListProperty,
     StringProperty,
 )
+from dimagi.utils.couch.migration import SyncCouchToSQLMixin, SyncSQLToCouchMixin
 from dimagi.utils.logging import notify_error, notify_exception
 from dimagi.utils.parsing import json_format_datetime
 
@@ -877,14 +878,21 @@ class RepeatRecordAttempt(DocumentSchema):
         return self.datetime
 
 
-class RepeatRecord(Document):
+class RepeaterIdProperty(StringProperty):
+
+    def __set__(self, instance, value):
+        super().__set__(instance, value)
+        type(instance).repeater.fget.reset_cache(instance)
+
+
+class RepeatRecord(SyncCouchToSQLMixin, Document):
     """
     An record of a particular instance of something that needs to be forwarded
     with a link to the proper repeater object
     """
 
     domain = StringProperty()
-    repeater_id = StringProperty()
+    repeater_id = RepeaterIdProperty()
     repeater_type = StringProperty()
     payload_id = StringProperty()
 
@@ -899,6 +907,18 @@ class RepeatRecord(Document):
     failure_reason = StringProperty()
     next_check = DateTimeProperty()
     succeeded = BooleanProperty(default=False)
+
+    @classmethod
+    def _migration_get_fields(cls):
+        return ["domain", "payload_id", "registered_at", "state"]
+
+    def _migration_sync_to_sql(self, sql_object, save=True):
+        sql_object.repeater = self.repeater
+        return super()._migration_sync_to_sql(sql_object, save=save)
+
+    @classmethod
+    def _migration_get_sql_model_class(cls):
+        return SQLRepeatRecord
 
     @property
     def record_id(self):
@@ -958,6 +978,38 @@ class RepeatRecord(Document):
         elif self.failure_reason:
             state = RECORD_FAILURE_STATE
         return state
+
+    @state.setter
+    def state(self, value):
+        if value == RECORD_EMPTY_STATE:
+            self.succeeded = True
+            self.cancelled = True
+            self.failure_reason = ""
+        elif value == RECORD_SUCCESS_STATE:
+            self.succeeded = True
+            self.cancelled = False
+            self.failure_reason = ""
+        elif value == RECORD_CANCELLED_STATE:
+            self.succeeded = False
+            self.cancelled = True
+            self.failure_reason = ""
+        elif value == RECORD_FAILURE_STATE:
+            self.succeeded = False
+            self.cancelled = False
+            self.failure_reason = "Unknown"
+        else:
+            assert value == RECORD_PENDING_STATE
+            self.succeeded = False
+            self.cancelled = False
+            self.failure_reason = ""
+
+    @property
+    def registered_at(self):
+        return self.registered_on
+
+    @registered_at.setter
+    def registered_at(self, value):
+        self.registered_on = value
 
     @classmethod
     def all(cls, domain=None, due_before=None, limit=None):
@@ -1164,7 +1216,7 @@ class RepeatRecord(Document):
         self.next_check = datetime.utcnow()
 
 
-class SQLRepeatRecord(models.Model):
+class SQLRepeatRecord(SyncSQLToCouchMixin, models.Model):
     domain = models.CharField(max_length=126)
     couch_id = models.CharField(max_length=36, null=True, blank=True)
     payload_id = models.CharField(max_length=36)
@@ -1184,6 +1236,18 @@ class SQLRepeatRecord(models.Model):
             models.Index(fields=['registered_at']),
         ]
         ordering = ['registered_at']
+
+    @classmethod
+    def _migration_get_couch_model_class(cls):
+        return RepeatRecord
+
+    @classmethod
+    def _migration_get_fields(cls):
+        return ["domain", "payload_id", "registered_at", "state"]
+
+    def _migration_sync_to_couch(self, couch_object, save=True):
+        couch_object.repeater_id = self.repeater.repeater_id
+        return super()._migration_sync_to_couch(couch_object, save=save)
 
     def requeue(self):
         # Changing "success" to "pending" and "cancelled" to "failed"
